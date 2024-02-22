@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -173,6 +173,18 @@ class ReservationControllerTest {
         String expectJson = objectMapper.writeValueAsString(expectObject);
         perform.andExpect(status().isBadRequest())
                 .andExpect(content().string(expectJson))
+                .andDo(print());
+    }
+
+    @Test
+    void 예약_취소_API() throws Exception {
+
+        MockHttpServletRequestBuilder builder = post("/reservation/1/cancel")
+                .session(session);
+        // when
+        ResultActions perform = mockMvc.perform(builder);
+        // then
+        perform.andExpect(status().isOk())
                 .andDo(print());
     }
 
