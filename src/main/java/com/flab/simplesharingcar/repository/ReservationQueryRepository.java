@@ -4,6 +4,7 @@ import com.flab.simplesharingcar.dto.MyReservationSearchResult;
 import com.flab.simplesharingcar.dto.QMyReservationSearchResult;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
@@ -22,8 +23,11 @@ public class ReservationQueryRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
     public Slice<MyReservationSearchResult> findMyReservation(Long userId, Pageable pageable) {
+
         long offset = pageable.getOffset();
         int pageSize = pageable.getPageSize();
+        int page = pageable.getPageNumber();
+
         List<MyReservationSearchResult> content = jpaQueryFactory.
                 select(new QMyReservationSearchResult(
                     reservation.id,
@@ -43,7 +47,10 @@ public class ReservationQueryRepository {
             content.remove(pageSize);
             hasNext = true;
         }
-        return new SliceImpl<>(content, pageable, hasNext);
+
+        PageRequest paging = PageRequest.of(page, pageSize);
+
+        return new SliceImpl<>(content, paging, hasNext);
     }
 
 }
